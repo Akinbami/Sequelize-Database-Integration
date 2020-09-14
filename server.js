@@ -8,7 +8,7 @@ const connection = new Sequelize("testSequelizeDB", "root", "", {
     dialect: 'mysql'
 })
 
-const User = connection.define("User", {
+const User = connection.define("Users", {
     uuid: {
         type: Sequelize.UUID,
         primaryKey: true,
@@ -17,6 +17,18 @@ const User = connection.define("User", {
     name: Sequelize.STRING,
     bio: Sequelize.TEXT
 })
+
+const Post = connection.define("Posts", {
+    title: Sequelize.STRING,
+    description: Sequelize.STRING
+})
+
+connection.authenticate()
+    .then(() => {
+        console.log("Connection to the database have been established successfully.");
+    }).catch(err => {
+        console.error("unable to connect to the database:", err);
+    })
 
 connection.sync({
     logging: console.log,
