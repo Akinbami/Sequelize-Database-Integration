@@ -23,6 +23,8 @@ const Post = connection.define("Posts", {
     description: Sequelize.STRING
 })
 
+User.hasOne(Post);   //1:1 relationship
+
 connection.authenticate()
     .then(() => {
         console.log("Connection to the database have been established successfully.");
