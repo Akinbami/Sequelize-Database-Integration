@@ -1,6 +1,8 @@
 const express = require('express');
 const Sequelize = require('sequelize');
 
+const Data = require('./data');
+
 const app = express();
 const port = 8001;
 
@@ -9,13 +11,30 @@ const connection = new Sequelize("testSequelizeDB", "root", "", {
 })
 
 const User = connection.define("Users", {
-    uuid: {
-        type: Sequelize.UUID,
-        primaryKey: true,
-        defaultValue: Sequelize.UUIDV4
+    name: {
+        type: Sequelize.STRING,
+        allowNull: false,
+        defaultValue: "dayo"
     },
-    name: Sequelize.STRING,
-    bio: Sequelize.TEXT
+    email: {
+        validate: {
+            isEmail: true
+        },
+        type: Sequelize.STRING
+    }
+    password: Sequelize.STRING,
+    address: Sequelize.STRING
+},
+{
+    hooks: {
+        beforeValidate: (User, options)=>{
+            User.address =  "happy";
+        },
+        afterValidate: (User, options)=>{
+            User.address = "tony";
+        }
+    }
+    
 })
 
 const Post = connection.define("Posts", {
@@ -23,7 +42,11 @@ const Post = connection.define("Posts", {
     description: Sequelize.STRING
 })
 
-User.hasOne(Post);   //1:1 relationship
+// User.hasOne(Post);   //1:1 relationship
+User.hasMany(Post); //1:many relationship
+
+// const User = require('./models/User')(connection);
+// const Post = require('./models/Post')(connection);
 
 connection.authenticate()
     .then(() => {
@@ -39,6 +62,15 @@ connection.sync({
     console.log("Connection to the database have been established successfully.");
     app.listen(port, ()=>{
         console.log("running server on port "+port)
+    })
+}).then(()=>{
+    User.bulkCreate(Data)
+    
+}).then(()=>{
+    Post.create({
+        UserId: 1,
+        title: "fdgfhn",
+        description: "fsdgfhgjhnghfgdfdz"
     })
 }).catch(err=>{
     console.error("unable to connect to the database:", err);

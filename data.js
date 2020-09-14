@@ -599,3 +599,5 @@ const data = [{
         "address": "2333 Nulla. Rd."
     }
 ];
+
+module.exports = data;
